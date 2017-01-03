@@ -26,28 +26,44 @@ readable_json = json.loads(str_response)
 # If the focused workspace is equal to the number of workspaces
 # the next keypress starts at 1
 
-max_value = []
+
+workspace_list = []
+current_workspace = ""
+next_workspace = ""
+
 for i in readable_json:
+    # make the list of workspaces and sort it
     num_values = i["num"]
-    max_value.append(num_values)
-    greatest_workspace = max(max_value)
-    focused_value = i["focused"]
 
-    if focused_value == True:
-        starting_workspace = num_values
-        #print("Focused workspace is:" + str(num_values))
-        #print("We will start on workspace : " + str(num_values))
-        next_workspace = num_values + 1
-        #print("Our next workspace will be : "+ str(next_workspace))
+    workspace_list.append(num_values)
+    workspace_list = sorted(workspace_list)
 
-if next_workspace > greatest_workspace:
-    print("We are going back to 1")
-    subprocess.call(["i3-msg","workspace","1"])
+    focused = i["focused"]
+    # find which of the workspaces have the focus
+    # this will be our starting point
+    # to figure out what the next workspace will be
+    if focused == True:
+        current_workspace = num_values
+
+# enumerate the list so that the workspaces and indicies are in order
+# when i3-msg outputs the json data, these get jumbled sometimes
+enum_list = list(enumerate(workspace_list))
+# here we get the index of the current workspace that has focus
+current_index = workspace_list.index(current_workspace)
+
+# determine the max and min index and values of the active workpsaces
+min_index, min_value = min(enumerate(workspace_list), key=operator.itemgetter(1))
+max_index, max_value = max(enumerate(workspace_list), key=operator.itemgetter(1))
+
+# to figure out where to go next we have to
+# increment the index by 1 unless doing so brings it out of range
+# then we just go back to 0
+if current_index >= max_index:
+    next_workspace_index = 0
+    subprocess.call(["i3-msg","workspace", next_workspace])
 else:
+    next_workspace_index = current_index + 1
+    next_workspace = enum_list[next_workspace_index[1]]
     subprocess.call(["i3-msg","workspace",next_workspace])
-    print(next_workspace)
-    print("We are going to " + str(next_workspace))
 
-#print(str(num_values) + ":" + str(focused_value))
-#print("There are " + str(greatest_workspace) + " workspaces")
 
