@@ -65,8 +65,5 @@ if current_index >= max_index:
     subprocess.call(["i3-msg","workspace", str(next_workspace)])
 else:
     next_workspace_index = current_index + 1
-    next_workspace = str(enum_list[next_workspace_index[1]])
-    #print("i3-msg workspace " + str(next_workspace))
+    next_workspace = enum_list[next_workspace_index][1]
     subprocess.call(["i3-msg","workspace", str(next_workspace)])
-
-
