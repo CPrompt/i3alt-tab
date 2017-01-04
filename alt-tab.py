@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-
+import operator
 import subprocess
 import json
 
@@ -60,10 +60,13 @@ max_index, max_value = max(enumerate(workspace_list), key=operator.itemgetter(1)
 # then we just go back to 0
 if current_index >= max_index:
     next_workspace_index = 0
-    subprocess.call(["i3-msg","workspace", next_workspace])
+    next_workspace = enum_list[0][1]
+    #print("i3-msg workspace " + str(next_workspace))
+    subprocess.call(["i3-msg","workspace", str(next_workspace)])
 else:
     next_workspace_index = current_index + 1
-    next_workspace = enum_list[next_workspace_index[1]]
-    subprocess.call(["i3-msg","workspace",next_workspace])
+    next_workspace = str(enum_list[next_workspace_index[1]])
+    #print("i3-msg workspace " + str(next_workspace))
+    subprocess.call(["i3-msg","workspace", str(next_workspace)])
 
 
